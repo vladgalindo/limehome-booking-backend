@@ -40,7 +40,7 @@ class AuthorizationLogout(Resource):
         raw_jti = get_raw_jwt()['jti']
         ttl = redis_db.ttl(raw_jti)
         redis_db.set(raw_jti, 'true', ttl)
-        return {"status": "Successful logout, hope to see again soon"}
+        return {"status": 202, "sms": "Successful logout, hope to see again soon"}, 202
 
 
 @authorization_api.route('/jwt-check')
@@ -57,4 +57,4 @@ class JwtValidation(Resource):
         :return:
         '''
         is_invalid = check_invalid_token(get_raw_jwt())
-        return {"is_invalid": is_invalid}
+        return {"is_invalid": is_invalid}, 200

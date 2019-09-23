@@ -27,7 +27,7 @@ class Bookings(Resource):
         req_payload = api.payload
         req_payload['user'] = user_id
         booking_service.create_booking(req_payload)
-        return {"Status": "Booking saved successfully"}
+        return {"status": 200, "sms": "Booking saved successfully"}
 
 
 @booking_api.expect(authorization_parser)
@@ -45,7 +45,7 @@ class BookingFetchUpdate(Resource):
         :return:
         '''
         data = booking_service.fetch_booking(id)
-        return {"Status": "Booking found", "data": marshal(data, booking_fetch)}
+        return {"status": 200, "sms": "Booking found", "data": marshal(data, booking_fetch)}, 200
 
     @jwt_required
     @booking_api.expect(booking)
@@ -59,7 +59,7 @@ class BookingFetchUpdate(Resource):
         req_payload = api.payload
         req_payload['user'] = user_id
         booking_service.update_booking(id, user_id, req_payload)
-        return {"Status": "Booking updated successfully"}
+        return {"status": 202, "sms": "Booking updated successfully"}, 202
 
 
 @booking_api.expect(authorization_parser)
@@ -79,7 +79,7 @@ class BookingDelete(Resource):
         req_payload = api.payload
         req_payload['user'] = user_id
         booking_service.soft_delete_booking(id, req_payload)
-        return {'Message': "Booking deleted successfully"}
+        return {"status": 202, "sms": "Booking deleted successfully"}, 202
 
 
 @booking_api.expect(authorization_parser)
@@ -96,7 +96,7 @@ class BookingsByPlace(Resource):
         :return:
         '''
         data = booking_service.fetch_booking_by_place(id)
-        return {"Status": "Bookings by Place", "data": marshal(data, booking_fetch)}
+        return {"status": 200, "sms": "Bookings by Place", "data": marshal(data, booking_fetch)}, 200
 
 
 @booking_api.expect(authorization_parser)
@@ -114,4 +114,4 @@ class BookingsByUser(Resource):
         '''
         user_id = get_jwt_identity()
         data = booking_service.fetch_booking_by_user(user_id)
-        return {"Status": "Bookings by Users", "data": marshal(data, booking_fetch)}
+        return {"status": 200, "sms": "Bookings by Users", "data": marshal(data, booking_fetch)}, 200

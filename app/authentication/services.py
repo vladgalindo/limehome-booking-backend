@@ -31,7 +31,7 @@ class AuthorizationService(object):
                     refresh_jti = get_jti(encoded_token=refresh_token)
                     redis_db.set(access_jti, 'false', app.config['JWT_ACCESS_TOKEN_EXPIRES'])
                     redis_db.set(refresh_jti, 'false', app.config['JWT_REFRESH_TOKEN_EXPIRES'])
-                    return {"access_token": access_token, "refresh_token": refresh_token}
+                    return {"status": 202, "access_token": access_token, "refresh_token": refresh_token}, 202
                 else:
                     abort(401, Message="You are missing one step on your activation process, Please check your email "
                                        "for instruction to activate your user")

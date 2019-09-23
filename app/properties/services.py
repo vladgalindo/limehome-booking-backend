@@ -22,4 +22,4 @@ class PropertiesService(object):
                                     'cat': 'hotel',
                                     'pretty': ''
                                 })
-        return response.json()
+        return response.json(), 200
