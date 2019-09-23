@@ -26,9 +26,10 @@ def send_mail(email_ids, subject, message_text, html_file=None, html_body=None):
                           sender=default_sender,
                           recipients=email_ids)
         try:
-            email.send(msg)
+            result = email.send(msg)
+            logging.info(result)
         except Exception as err:
-            logging.error(err)
+            logging.info(err)
 
     email_process = threading.Thread(target=sendind_mail, args=(default_sender, email_ids, subject, message_text, html_file, html_body))
     email_process.start()

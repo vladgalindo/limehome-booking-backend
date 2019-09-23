@@ -6,11 +6,14 @@ from flask_restplus import Api
 from pymongo import MongoClient
 from redis import StrictRedis
 from flask_cors import CORS
+from flask_google_cloud_logger import FlaskGoogleCloudLogger
+from app.common.cloud_logger import logger
 
 
 # App
 app = Flask(__name__)
 app.config.from_object(os.getenv('FLASK_ENVIRONMENT', 'config.Development'))
+FlaskGoogleCloudLogger(app)
 CORS(app)
 # Email service
 email = Mail(app)
