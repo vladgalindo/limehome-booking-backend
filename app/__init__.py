@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from redis import StrictRedis
 from flask_cors import CORS
 
-print("My FLASK_ENVIRONMENT i {}".format(os.getenv('FLASK_ENVIRONMENT')))
+
 # App
 app = Flask(__name__)
 app.config.from_object(os.getenv('FLASK_ENVIRONMENT', 'config.Development'))
