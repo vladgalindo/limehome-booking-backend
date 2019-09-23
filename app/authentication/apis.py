@@ -1,8 +1,8 @@
-from app import api, redis_db
+from app import api, redis_db, check_invalid_token
 from app.authentication.models import login
 from app.authentication.services import AuthorizationService
 from app.common.generic_models import authorization_parser
-from flask_jwt_extended import jwt_required, get_raw_jwt
+from flask_jwt_extended import jwt_required, get_raw_jwt, get_jti
 from flask_restplus import Namespace, Resource
 
 authorization_api = Namespace('authorization', description="User Authorization")
@@ -41,3 +41,20 @@ class AuthorizationLogout(Resource):
         ttl = redis_db.ttl(raw_jti)
         redis_db.set(raw_jti, 'true', ttl)
         return {"status": "Successful logout, hope to see again soon"}
+
+
+@authorization_api.route('/jwt-check')
+class JwtValidation(Resource):
+    '''
+    Check JWT validation
+    '''
+
+    @jwt_required
+    def post(self):
+        '''
+        Check JWT validation
+        :param token:
+        :return:
+        '''
+        is_invalid = check_invalid_token(get_raw_jwt())
+        return {"is_invalid": is_invalid}
