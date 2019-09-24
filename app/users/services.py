@@ -56,7 +56,6 @@ class UserService(object):
                       'sms': "This Link is invalid"}
             raise e
         if records[0]['is_active']:
-            abort(400, "Account Already Active")
             e = BadRequest("Account Already Active")
             e.data = {'ui': True, 'status': 'error',
                       'sms': "Account Already Active"}

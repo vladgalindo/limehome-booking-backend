@@ -1,7 +1,7 @@
 from flask_restplus import abort
 from passlib.hash import argon2
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti
-from werkzeug.exceptions import Unauthorized
+from app.common.error_handler import error_handler
 
 from app.common.mongo_base import MongoBase
 from app.common.constants import COLLECTIONS
@@ -35,18 +35,14 @@ class AuthorizationService(object):
                     redis_db.set(refresh_jti, 'false', app.config['JWT_REFRESH_TOKEN_EXPIRES'])
                     return {"status": 202, "access_token": access_token, "refresh_token": refresh_token}, 202
                 else:
-                    e = Unauthorized("You are missing one step on your activation process, Please check your email "
-                                       "for instruction to activate your user")
-                    e.data = {'ui': True, 'status': 'error', 'sms': "You are missing one step on your activation process, Please check your email "
-                                       "for instruction to activate your user"}
-                    raise e
+                    message = "You are missing one step on your activation process, Please check your email for instruction to activate your user"
+                    error_handler(code=401, message=message, ui_status=True)
+
             else:
-                e = Unauthorized("Your Credentials don't match with our registries")
-                e.data = {'ui': True, 'status': 'error',
-                          'sms': "Your Credentials don't match with our registries"}
-                raise e
+                message = "Your Credentials don't match with our registries"
+                error_handler(code=401, message=message, ui_status=True)
+
         else:
-            e = Unauthorized("Your Credentials don't match with our registries")
-            e.data = {'ui': True, 'status': 'error',
-                      'sms': "Your Credentials don't match with our registries"}
-            raise e
+            message = "Your Credentials don't match with our registries"
+            error_handler(code=401, message=message, ui_status=True)
+
