@@ -4,7 +4,7 @@ from app.bookings.models import booking, booking_save
 from app.common.email_service import send_mail
 from app.common.mongo_base import MongoBase
 from bson import ObjectId
-from flask import abort
+from app.common.error_handler import error_handler
 from werkzeug.exceptions import BadRequest, NotFound
 
 mongobase_obj = MongoBase()
@@ -40,9 +40,8 @@ class BookingService(object):
             payload = custom_marshal(payload, booking_save, 'update')
             mongobase_obj.update(COLLECTIONS['BOOKINGS'], {"_id": ObjectId(id)}, {"$set": payload})
         else:
-            e = BadRequest("The booking you are trying to modify belongs to a different user")
-            e.data = {'ui': True, 'status': 'error', 'sms': "The booking you are trying to modify belongs to a different user"}
-            raise e
+            message = "The booking you are trying to modify belongs to a different user"
+            error_handler(code=400, message=message, ui_status=True)
 
 
     def fetch_booking(self, id):
@@ -55,9 +54,8 @@ class BookingService(object):
         if count > 0:
             return registry
         else:
-            e = NotFound("The booking you are were looking for was not found")
-            e.data = {'ui': True, 'status': 'error', 'sms': "The booking you are were looking for was not found"}
-            raise e
+            message = "The booking you are were looking for was not found"
+            error_handler(code=404, message=message, ui_status=True)
 
     def fetch_booking_by_place(self, id):
         '''
@@ -69,9 +67,8 @@ class BookingService(object):
         if count > 0:
             return registry
         else:
-            e = NotFound("This place have no bookings yet")
-            e.data = {'ui': True, 'status': 'error', 'sms': "This place have no bookings yet"}
-            raise e
+            message = "This place have no bookings yet"
+            error_handler(code=404, message=message, ui_status=True)
 
     def fetch_booking_by_user(self, id):
         '''
@@ -83,9 +80,8 @@ class BookingService(object):
         if count > 0:
             return registry
         else:
-            e = NotFound("This user haven't book anything yet")
-            e.data = {'ui': True, 'status': 'error', 'sms': "This user haven't book anything yet"}
-            raise e
+            message = "This user haven't book anything yet"
+            error_handler(code=404, message=message, ui_status=True)
 
 
     def soft_delete_booking(self, id, payload):
