@@ -1,6 +1,8 @@
 from flask import abort
 from bson import ObjectId
 from passlib.hash import argon2
+from werkzeug.exceptions import BadRequest
+
 from app.users.models import user
 from app.common.mongo_base import MongoBase
 from app.common.email_service import send_mail
@@ -22,10 +24,18 @@ class UserService(object):
         :return:
         """
         if body.get('password') != body.get('confirm_password'):
-            abort(400, "Password are not the same")
+            e = BadRequest("Password are not the same")
+            e.data = {'ui': True, 'status': 'error',
+                      'sms': "Password are not the same"}
+            raise e
+
         count, records = mongobase_obj.get(COLLECTIONS['USERS'], {"email": body['email']})
         if count > 0:
-            abort(400, "Email belongs to another user")
+            e = BadRequest("Email belongs to another user")
+            e.data = {'ui': True, 'status': 'error',
+                      'sms': "Email belongs to another user"}
+            raise e
+
         body = custom_marshal(body, user, 'create')
         body['password'] = argon2.using(rounds=4).encrypt(body['password'], )
         _id = mongobase_obj.insert(COLLECTIONS['USERS'], body)
@@ -41,8 +51,15 @@ class UserService(object):
         """
         count, records = mongobase_obj.get(COLLECTIONS['USERS'], {"_id": ObjectId(id)})
         if count == 0:
-            abort(400, "This Link is invalid")
+            e = BadRequest("This Link is invalid")
+            e.data = {'ui': True, 'status': 'error',
+                      'sms': "This Link is invalid"}
+            raise e
         if records[0]['is_active']:
             abort(400, "Account Already Active")
+            e = BadRequest("Account Already Active")
+            e.data = {'ui': True, 'status': 'error',
+                      'sms': "Account Already Active"}
+            raise e
         else:
             mongobase_obj.update(COLLECTIONS['USERS'], {"_id": ObjectId(id)}, {"$set": {"is_active": True}})

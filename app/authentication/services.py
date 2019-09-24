@@ -1,6 +1,8 @@
 from flask_restplus import abort
 from passlib.hash import argon2
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti
+from werkzeug.exceptions import Unauthorized
+
 from app.common.mongo_base import MongoBase
 from app.common.constants import COLLECTIONS
 from app import redis_db, app
@@ -33,9 +35,18 @@ class AuthorizationService(object):
                     redis_db.set(refresh_jti, 'false', app.config['JWT_REFRESH_TOKEN_EXPIRES'])
                     return {"status": 202, "access_token": access_token, "refresh_token": refresh_token}, 202
                 else:
-                    abort(401, Message="You are missing one step on your activation process, Please check your email "
+                    e = Unauthorized("You are missing one step on your activation process, Please check your email "
                                        "for instruction to activate your user")
+                    e.data = {'ui': True, 'status': 'error', 'sms': "You are missing one step on your activation process, Please check your email "
+                                       "for instruction to activate your user"}
+                    raise e
             else:
-                abort(401, Message="Your Credentials don't match with our registries")
+                e = Unauthorized("Your Credentials don't match with our registries")
+                e.data = {'ui': True, 'status': 'error',
+                          'sms': "Your Credentials don't match with our registries"}
+                raise e
         else:
-            abort(404, Message="Your Credentials don't match with our registries")
+            e = Unauthorized("Your Credentials don't match with our registries")
+            e.data = {'ui': True, 'status': 'error',
+                      'sms': "Your Credentials don't match with our registries"}
+            raise e

@@ -19,7 +19,7 @@ class Users(Resource):
         :return:
         """
         userService.register_user(api.payload)
-        return {"status": 200, "sms": 'Way to go, you have sing up'}, 200
+        return {'ui': True, 'status': 'success',  "sms": 'Way to go, you have sing up'}, 200
 
 
 @users_api.route('/activate/<string:id>')
@@ -34,4 +34,4 @@ class UserActivate(Resource):
         :return:
         """
         userService.activate_user(id)
-        return {"status": 200, "sms": "You're ready to go!, activation Successfully"}, 200
+        return {'ui': True, 'status': 'success',  "sms": "You're ready to go!, activation Successfully"}, 200
