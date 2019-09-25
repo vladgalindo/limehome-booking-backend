@@ -1,5 +1,5 @@
 from flask_restplus import marshal
-from app.common.date_tools import get_time
+from app.core.common.date_tools import get_time
 from flask_jwt_extended import get_jwt_identity
 
 

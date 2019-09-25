@@ -1,16 +1,42 @@
-from app import app, api, blueprint
-from app.users.apis import users_api
-from app.properties.apis import properties_api
-from app.authentication.apis import authorization_api
-from app.bookings.apis import booking_api
+import unittest
+from flask_jwt_extended import JWTManager
+from app.core import create_app
+from app import blueprint
+from redis import StrictRedis
 
-api.add_namespace(users_api, '{url_prefix}/users'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(properties_api, '{url_prefix}/properties'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(authorization_api, '{url_prefix}/auth'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(booking_api, '{url_prefix}/booking'.format(url_prefix=app.config['APP_URL_PREFIX']))
+app = create_app()
 app.register_blueprint(blueprint)
-
 app.app_context().push()
 
+# Redis
+redis_db = StrictRedis(
+    host=app.config['REDIS_HOST'],
+    port=app.config['REDIS_PORT'],
+    db=app.config['REDIS_DB'],
+    password=app.config['REDIS_PASSWORD'],
+    decode_responses=True
+)
+
+# JWT
+jw_token = JWTManager(app)
+
+@jw_token.token_in_blacklist_loader
+def check_invalid_token(token):
+    jti = token['jti']
+    registry = redis_db.get(jti)
+    if registry is None:
+        return True
+    return registry == 'true'
+
+
+def test():
+    """Runs the unit tests."""
+    tests = unittest.TestLoader().discover('app/test', pattern='test*.py')
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+    if result.wasSuccessful():
+        return 0
+    return 1
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=app.config['APP_PORT'], debug=True)
+    app.run()

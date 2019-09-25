@@ -1,15 +1,15 @@
+import os
 from flask_mail import Message
-from flask import render_template, copy_current_request_context
-from app import app, email
+from flask import render_template, copy_current_request_context, current_app
+from app.core import email
 import threading
 import logging
 
 
-@app.route('/')
 def send_mail(email_ids, subject, message_text, html_file=None, html_body=None):
     format = "%(asctime)s: %(message)s"
     logging.basicConfig(format=format, level=logging.ERROR, datefmt="%H:%M:%S")
-    default_sender = app.config['MAIL_DEFAULT_SENDER']
+    default_sender = os.getenv('MAIL_DEFAULT_SENDER')
 
     @copy_current_request_context
     def sendind_mail(default_sender, email_ids, subject, message_text, html_file=None, html_body=None):
