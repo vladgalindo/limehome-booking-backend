@@ -54,3 +54,9 @@ def error_handler(err):
     error_code = err.code
     sms = err.__str__
     return {"error_code": error_code, "sms": sms}, error_code
+
+@app.template_filter()
+def date_custom_filter(value, format='%Y/%m/%d'):
+    return value.strftime(format)
+
+app.jinja_env.filters['customdate'] = date_custom_filter

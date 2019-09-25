@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.common.constants import COLLECTIONS
 from app.common.custom_marshal import custom_marshal
 from app.bookings.models import booking, booking_save
@@ -22,10 +23,13 @@ class BookingService(object):
         :return:
         '''
         payload = custom_marshal(payload, booking_save, 'create')
+        print(payload)
         _id = mongobase_obj.insert(COLLECTIONS['BOOKINGS'], payload)
+        count, user = mongobase_obj.get(COLLECTIONS['USERS'], {"_id": ObjectId(payload['user'])})
 
-        '''send_mail([body['email']], "LimeHome App Account Activation", link, 'activation_email.html',
-                  {'link': link, 'name': body['first_name']})'''
+        send_mail([user[0]['email']], "LimeHome App New Booking", 'New Booking', 'booking_email.html',
+                  {'id': str(_id), 'name': user[0]['first_name'], 'title': payload['title'], 'vicinity': payload[
+                      'vicinity'], 'arrival': datetime.strptime(payload['arrival'], "%Y-%m-%dT%H:%M:%S.%f%z")})
 
     def update_booking(self, id, user_id, payload):
         '''
