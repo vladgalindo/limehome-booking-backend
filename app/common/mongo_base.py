@@ -3,14 +3,14 @@ from app import app
 
 
 class MongoBase(object):
-    def __init__(self):
-        mongo_bd_conn = MongoClient(app.config['MONGO_URI'], retryWrites=False)
+    def __init__(self, uri=app.config['MONGO_URI']):
+        mongo_bd_conn = MongoClient(uri, retryWrites=False)
         self.mongo_db = mongo_bd_conn[app.config['DB_NAME']]
 
     def get(self, collection_name, query):
         try:
             pointer = self.mongo_db[collection_name].find(query)
-            count = pointer.count()
+            count = self.mongo_db[collection_name].count_documents(filter=query)
             return count, list(pointer)
         except Exception as err:
             print('Something went wrong fetching from MongoDB Database', err)

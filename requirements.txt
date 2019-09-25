@@ -17,3 +17,4 @@ gunicorn
 mockupdb
 flaskr=1.0.0
 pytest
+flask_testing

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, url_for
+from flask import Flask, url_for, Blueprint
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_restplus import Api
@@ -48,7 +48,9 @@ if os.getenv('FLASK_ENVIRONMENT') == "config.Production":
         return url_for(self.endpoint('specs'), _external=True, _scheme='https')
 
     Api.specs_url = specs_url
-api = Api(app, title='LimeHome Booking App', description='LimeHome App', version=1.0)
+
+blueprint = Blueprint('api', __name__)
+api = Api(blueprint, title='LimeHome Booking App', description='LimeHome App', version=1.0)
 @api.errorhandler(Exception)
 def error_handler(err):
     error_code = err.code
