@@ -1,6 +1,7 @@
 from datetime import datetime
 from app.core.bookings.booking_dto import BookingDTO
 from app.core.common.email_service import send_mail
+from app.core.common.date_tools import format_datetime
 from app.core.bookings.booking_model import Bookings
 from app.core.users.user_model import Users
 from bson import ObjectId
@@ -26,14 +27,11 @@ class BookingService(object):
         # payload = custom_marshal(payload, booking_save, 'create')
         print("payload: {}".format(payload))
         user = Users.objects.get(_id=ObjectId(payload['user']))
-        '''payload['metadata']['updated_on'] = get_time()
-        payload['metadata']['updated_by'] = str(user['_id'])
-        payload['metadata']['created_on'] = get_time()
-        payload['metadata']['created_by'] = str(user['_id'])'''
         booking = Bookings(place_id=payload['place_id'], icon=payload['icon'], latitude=payload['latitude'],
                            longitude=payload['longitude'], href=payload['href'], vicinity=payload['vicinity'],
                            title=payload['title'], arrival=payload['arrival'], departure=payload['departure'],
-                           guests=payload['guests'], room_type=payload['room_type'], user=user)
+                           guests=payload['guests'], room_type=payload['room_type'], user=user,
+                           created_on=format_datetime(datetime.now(), "%Y-%m-%dT%H:%M:%S.%f%z"))
         booking.save()
 
         send_mail([user['email']], "LimeHome App New Booking", 'New Booking', 'booking_email.html',

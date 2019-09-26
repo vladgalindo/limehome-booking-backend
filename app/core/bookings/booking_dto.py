@@ -17,6 +17,7 @@ class BookingDTO:
         'guests': fields.Integer(required=False, description="Booking guests amount"),
         'room_type': fields.String(required=True, description="Booking room type"),
         'is_deleted': fields.Boolean(required=True, description="Booking room type"),
+        'created_on': fields.DateTime(required=True, description="Booking creation date"),
     })
 
     booking_save = api.inherit('booking_save', booking, {
