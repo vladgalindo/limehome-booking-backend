@@ -36,7 +36,7 @@ class BookingService(object):
 
         send_mail([user['email']], "LimeHome App New Booking", 'New Booking', 'booking_email.html',
                   {'id': str(booking['_id']), 'name': user['first_name'], 'title': payload['title'], 'vicinity': payload[
-                      'vicinity'], 'arrival': datetime.strptime(payload['arrival'], "%Y-%m-%dT%H:%M:%S.%f%z")})
+                      'vicinity'], 'arrival': datetime.strptime(payload['arrival'], "%Y-%m-%dT%H:%M:%S.%f%Z")})
 
 
     def update_booking(self, id, user_id, payload):
