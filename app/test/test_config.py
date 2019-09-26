@@ -12,9 +12,10 @@ class TestDevelopmentConfig(TestCase):
         app.config.from_object(os.getenv('config.Development'))
         return app
 
-    def test_app_is_development(self):
-        self.assertFalse(app.config['SECRET_KEY'] is 'my_precious')
-        self.assertTrue(app.config['DEBUG'] is True)
+    def test_development_environment(self):
+        self.assertFalse(app.config['SECRET_KEY'] is 'piece_of_cake')
+        print(type(app.config['DEBUG']))
+        self.assertTrue(app.config['DEBUG'])
         self.assertFalse(current_app is None)
         self.assertTrue(
             app.config['DB_HOST'] == 'ds217078.mlab.com'
@@ -25,11 +26,11 @@ class TestTestingConfig(TestCase):
         app.config.from_object('config.Testing')
         return app
 
-    def test_app_is_testing(self):
-        self.assertFalse(app.config['SECRET_KEY'] is 'my_precious')
+    def test_testing_environment(self):
+        self.assertFalse(app.config['SECRET_KEY'] is 'piece_of_cake')
         self.assertTrue(app.config['DEBUG'])
         self.assertTrue(
-            app.config['DB_HOST'] == 'ds217078.mlab.com'
+            app.config['DB_HOST'] == 'ds047037.mlab.com'
         )
 
 
@@ -38,7 +39,7 @@ class TestProductionConfig(TestCase):
         app.config.from_object('config.Production')
         return app
 
-    def test_app_is_production(self):
+    def test_production_environment(self):
         self.assertTrue(app.config['DEBUG'] is False)
 
 

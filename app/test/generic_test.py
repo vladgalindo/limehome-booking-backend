@@ -1,7 +1,10 @@
+from flask_mongoengine import MongoEngine
 from flask_testing import TestCase
 from app.core import db
 from run import app
 import unittest
+from app.core.users.user_model import Users
+from app.core.bookings.booking_model import Bookings
 from mongoengine import connect, disconnect, get_connection
 
 
@@ -16,4 +19,9 @@ class GenericTestCase(TestCase):
         conn = get_connection()
 
     def tearDown(self):
-        disconnect()
+        delete_users = Users.objects.all()
+        for user in delete_users:
+            Users.delete(user)
+        delete_bookings = Bookings.objects.all()
+        for booking in delete_bookings:
+            Bookings.delete(booking)
