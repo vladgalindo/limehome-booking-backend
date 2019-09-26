@@ -47,8 +47,11 @@ class Config(object):
 
     # BFF
     HERE_PLACES_URL = os.getenv('HERE_PLACES_URL', 'https://places.cit.api.here.com/places/v1/discover/explore')
+    os.environ['HERE_PLACES_URL'] = HERE_PLACES_URL
     HERE_APP_ID = os.getenv('HERE_APP_ID', 'iw8thRxwHyaYmlzB4nL3')
+    os.environ['HERE_APP_ID'] = HERE_APP_ID
     HERE_APP_CODE = os.getenv('HERE_APP_CODE', 'Jj1JJy-8n3nUWjXoZVA_Kg')
+    os.environ['HERE_APP_CODE'] = HERE_APP_CODE
 
 class Development(Config):
     DEBUG = True
@@ -61,14 +64,14 @@ class Testing(Config):
     DEBUG = True
     TESTING = True
     # MongoDB cloud service
-    DB_HOST = os.getenv('DB_HOST', 'mongomock://localhost')
-    DB_USER = os.getenv('DB_USER', '')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
-    DB_PORT = os.getenv('DB_PORT', '')
-    DB_NAME = os.getenv('DB_NAME', 'mongoenginetest')
+    DB_HOST = os.getenv('DB_HOST', 'ds047037.mlab.com')
+    DB_USER = os.getenv('DB_USER', 'limehometest')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', 'TESTrlaarl9')
+    DB_PORT = os.getenv('DB_PORT', 47037)
+    DB_NAME = os.getenv('DB_NAME', 'limetest')
     MONGODB_HOST = f'''mongodb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?retryWrites=false'''
 
-    '''
+    '''mongodb://limehometest:limetest@ds047037.mlab.com:47037/limetest?retryWrites=false
     DB_HOST = os.getenv('DB_HOST', 'ds047037.mlab.com')
     DB_USER = os.getenv('DB_USER', 'limehometest')
     DB_PASSWORD = os.getenv('DB_PASSWORD', 'TESTrlaarl9')

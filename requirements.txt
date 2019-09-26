@@ -19,3 +19,5 @@ gunicorn
 mockupdb
 pytest
 flask_testing
+flask_mongoengine
+mongomock
