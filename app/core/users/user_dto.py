@@ -1,7 +1,6 @@
 from flask_restplus import Namespace, fields
-from app.core.common.geneirc_dto import GenericDTO
 
-metadata = GenericDTO.meta
+
 class UserDTO:
     api = Namespace('user', description='user related operations')
     generic_users = api.model('user', {
@@ -12,8 +11,7 @@ class UserDTO:
     })
 
     user = api.inherit('user', generic_users, {
-        'is_active': fields.Boolean(default=False, description="Is account Activated"),
-        'meta': fields.Nested(metadata)
+        'is_active': fields.Boolean(default=False, description="Is account Activated")
     })
 
     user_request = api.inherit('generic users', generic_users, {
