@@ -6,7 +6,6 @@ from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
 from redis import StrictRedis
 
-print(os.getenv('FLASK_ENV'))
 if os.getenv('FLASK_ENV') == 'development' or None:
     config='config.Development'
 elif os.getenv('FLASK_ENV') == 'production':
