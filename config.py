@@ -70,19 +70,3 @@ class Testing(Config):
     DB_PORT = os.getenv('DB_PORT', 47037)
     DB_NAME = os.getenv('DB_NAME', 'limetest')
     MONGODB_HOST = f'''mongodb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?retryWrites=false'''
-
-    '''mongodb://limehometest:limetest@ds047037.mlab.com:47037/limetest?retryWrites=false
-    DB_HOST = os.getenv('DB_HOST', 'ds047037.mlab.com')
-    DB_USER = os.getenv('DB_USER', 'limehometest')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', 'TESTrlaarl9')
-    DB_PORT = os.getenv('DB_PORT', 47037)
-    DB_NAME = os.getenv('DB_NAME', 'limetest')
-    MONGO_URI = f''mongodb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?retryWrites=false''
-    MONGODB_SETTINGS = {
-        'db': DB_NAME,
-        'host': DB_HOST,
-        'port': DB_PORT,
-        'username': DB_USER,
-        'password': DB_PASSWORD
-    }
-    '''
