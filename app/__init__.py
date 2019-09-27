@@ -1,62 +1,35 @@
 import os
-from flask import Flask, url_for
-from flask_jwt_extended import JWTManager
-from flask_mail import Mail
 from flask_restplus import Api
-from pymongo import MongoClient
-from redis import StrictRedis
-from flask_cors import CORS
-from flask_google_cloud_logger import FlaskGoogleCloudLogger
-from app.common.cloud_logger import logger
+from flask import Blueprint, url_for
 
+from .core.users.apis import api as user_apis
+from .core.properties.apis import api as properties_apis
+from .core.authentication.apis import api as auth_apis
+from .core.bookings.apis import api as booking_apis
+from app.core import app
 
-# App
-app = Flask(__name__)
-app.config.from_object(os.getenv('FLASK_ENVIRONMENT', 'config.Development'))
-FlaskGoogleCloudLogger(app)
-CORS(app)
-# Email service
-email = Mail(app)
-
-# MongoDB
-mongo_bd_conn = MongoClient(app.config['MONGO_URI'])
-mongo_bd = mongo_bd_conn[app.config['DB_NAME']]
-
-# Redis
-redis_db = StrictRedis(
-    host=app.config['REDIS_HOST'],
-    port=app.config['REDIS_PORT'],
-    db=app.config['REDIS_DB'],
-    password=app.config['REDIS_PASSWORD'],
-    decode_responses=True
-)
-
-# JWT
-jw_token = JWTManager(app)
-@jw_token.token_in_blacklist_loader
-def check_invalid_token(token):
-    jti = token['jti']
-    registry = redis_db.get(jti)
-    if registry is None:
-        return True
-    return registry == 'true'
-
-
+blueprint = Blueprint('api', __name__)
 if os.getenv('FLASK_ENVIRONMENT') == "config.Production":
     @property
     def specs_url(self):
         return url_for(self.endpoint('specs'), _external=True, _scheme='https')
 
     Api.specs_url = specs_url
-api = Api(app, title='LimeHome Booking App', description='LimeHome App', version=1.0)
+
+
+api = Api(blueprint,
+          title='LimeHome Booking App', description='LimeHome App',
+          version='1.0',
+          )
+
+api.add_namespace(user_apis, '{url_prefix}/users'.format(url_prefix=app.config['APP_URL_PREFIX']))
+api.add_namespace(properties_apis, '{url_prefix}/properties'.format(url_prefix=app.config['APP_URL_PREFIX']))
+api.add_namespace(auth_apis, '{url_prefix}/auth'.format(url_prefix=app.config['APP_URL_PREFIX']))
+api.add_namespace(booking_apis, '{url_prefix}/booking'.format(url_prefix=app.config['APP_URL_PREFIX']))
+
+
 @api.errorhandler(Exception)
 def error_handler(err):
     error_code = err.code
     sms = err.__str__
     return {"error_code": error_code, "sms": sms}, error_code
-
-@app.template_filter()
-def date_custom_filter(value, format='%Y/%m/%d'):
-    return value.strftime(format)
-
-app.jinja_env.filters['customdate'] = date_custom_filter

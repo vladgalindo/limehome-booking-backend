@@ -1,13 +1,20 @@
-from app import app, api
-from app.users.apis import users_api
-from app.properties.apis import properties_api
-from app.authentication.apis import authorization_api
-from app.bookings.apis import booking_api
+import unittest
+from app.core import app
+from app import blueprint
 
-api.add_namespace(users_api, '{url_prefix}/users'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(properties_api, '{url_prefix}/properties'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(authorization_api, '{url_prefix}/auth'.format(url_prefix=app.config['APP_URL_PREFIX']))
-api.add_namespace(booking_api, '{url_prefix}/booking'.format(url_prefix=app.config['APP_URL_PREFIX']))
+# app = create_app()
+app.register_blueprint(blueprint)
+app.app_context().push()
+
+
+def test():
+    """Runs the unit tests."""
+    tests = unittest.TestLoader().discover('app/test', pattern='test*.py')
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+    if result.wasSuccessful():
+        return 0
+    return 1
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=app.config['APP_PORT'], debug=True)
+    app.run()

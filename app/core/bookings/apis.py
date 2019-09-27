@@ -1,23 +1,25 @@
-from app import api
-from app.bookings.models import booking, booking_fetch
-from app.bookings.services import BookingService
-from app.common.generic_models import authorization_parser
+from app.core.bookings.booking_dto import BookingDTO
+from app.core.bookings.services import BookingService
+from app.core.common.generic_dto import GenericDTO
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restplus import Namespace, Resource, marshal
 
-booking_api = Namespace('bookings', description="Booking APIs")
 
+api = BookingDTO.api
+auth_parser = GenericDTO.authorization_parser
+booking_fetch = BookingDTO.booking_fetch
+booking = BookingDTO.booking
 booking_service = BookingService()
 
 
-@booking_api.expect(authorization_parser)
-@booking_api.route('')
+@api.expect(auth_parser)
+@api.route('')
 class Bookings(Resource):
     '''
     Manage saving and fetching for booking objects
     '''
     @jwt_required
-    @booking_api.expect(booking)
+    @api.expect(booking)
     def post(self):
         '''
         Save a booking
@@ -30,8 +32,8 @@ class Bookings(Resource):
         return {"ui": True, "status": "success", "sms": "Booking saved successfully"}, 200
 
 
-@booking_api.expect(authorization_parser)
-@booking_api.route('/<string:id>')
+@api.expect(auth_parser)
+@api.route('/<string:id>')
 class BookingFetchUpdate(Resource):
     '''
     Fetch, Update bookings
@@ -45,10 +47,10 @@ class BookingFetchUpdate(Resource):
         :return:
         '''
         data = booking_service.fetch_booking(id)
-        return {'ui': False, 'status': 'success',  "sms": "Booking found", "data": marshal(data, booking_fetch)}, 200
+        return {'ui': False, 'status': 'success',  "sms": "Booking found", "data": marshal(data, BookingDTO.booking_fetch)}, 200
 
     @jwt_required
-    @booking_api.expect(booking)
+    @api.expect(booking)
     def put(self, id):
         '''
         Update a booking
@@ -62,8 +64,8 @@ class BookingFetchUpdate(Resource):
         return {"ui": True, "status": "success", "sms": "Booking updated successfully"}, 202
 
 
-@booking_api.expect(authorization_parser)
-@booking_api.route('/delete/<string:id>')
+@api.expect(auth_parser)
+@api.route('/delete/<string:id>')
 class BookingDelete(Resource):
     """
     Delete Booking
@@ -75,15 +77,12 @@ class BookingDelete(Resource):
         :param id:
         :return:
         """
-        user_id = get_jwt_identity()
-        req_payload = api.payload
-        req_payload['user'] = user_id
-        booking_service.soft_delete_booking(id, req_payload)
+        booking_service.soft_delete_booking(id)
         return {"ui": True, "status": "success", "sms": "Booking deleted successfully"}, 202
 
 
-@booking_api.expect(authorization_parser)
-@booking_api.route('/by-place/<string:id>')
+@api.expect(auth_parser)
+@api.route('/by-place/<string:id>')
 class BookingsByPlace(Resource):
     """
     Fetch bookings by place
@@ -96,11 +95,11 @@ class BookingsByPlace(Resource):
         :return:
         '''
         data = booking_service.fetch_booking_by_place(id)
-        return {"ui": False, "status": "success", "sms": "Bookings by Place", "data": marshal(data, booking_fetch)}, 200
+        return {"ui": False, "status": "success", "sms": "Bookings by Place", "data": marshal(data, BookingDTO.booking_fetch)}, 200
 
 
-@booking_api.expect(authorization_parser)
-@booking_api.route('/by-user')
+@api.expect(auth_parser)
+@api.route('/by-user')
 class BookingsByUser(Resource):
     """
     Fetch bookings by logged user
@@ -114,4 +113,4 @@ class BookingsByUser(Resource):
         '''
         user_id = get_jwt_identity()
         data = booking_service.fetch_booking_by_user(user_id)
-        return {"ui": False, "status": "success", "sms": "Bookings by Users", "data": marshal(data, booking_fetch)}, 200
+        return {"ui": False, "status": "success", "sms": "Bookings by Users", "data": marshal(data, BookingDTO.booking_fetch)}, 200

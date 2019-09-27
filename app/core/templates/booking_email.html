@@ -164,7 +164,7 @@
     <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eeeeee">
       <div class="Gmail" style="height: 1px !important; margin-top: -1px !important; max-width: 600px !important; min-width: 600px !important; width: 600px !important;"></div>
       <div style="display: none; max-height: 0px; overflow: hidden;">
-        Paste your preview text here***
+        {{name|capitalize}} you have booked at {{title|capitalize}}
       </div>
       <!-- Insert &zwnj;&nbsp; hack after hidden preview text -->
       <div style="display: none; max-height: 0px; overflow: hidden;">
@@ -203,31 +203,19 @@
                               </tr>
                               <tr>
                                 <td class="td-padding" align="left" style="font-family: 'Laila', monospace; color: #212121!important; font-size: 16px; line-height: 24px; padding-top: 18px; padding-left: 18px!important; padding-right: 18px!important; padding-bottom: 0px!important; mso-line-height-rule: exactly; mso-padding-alt: 18px 18px 0px 18px;">
-                                  {{name|capitalize}} we are so happy that you join us!, there one tiny step left to complete you account activation. You must click on the activation button to finish the process, hope you enjoy our services
+                                  {{name|capitalize}} you have booked at {{title|capitalize}}
+                                  <br><br>
+                                  Reservation: <bold>#{{id}}</bold>, arriving on <bold>{{arrival}}</bold>.
+                                  Address: <bold>{{vicinity|capitalize}}</bold>
+                                  #{{id}}
+                                  Keep your reservation number close just in case, please contact us if you have any
+                                  doubt.
                                   <br><br>
                                   Enjoy! :)
                                 </td>
                               </tr>
                               <!-- END BODY COPY -->
-                              <!-- BUTTON -->
-                              <tr>
-                                <td align="left" style="padding: 18px 18px 18px 18px; mso-alt-padding: 18px 18px 18px 18px!important;">
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                      <td>
-                                        <table border="0" cellspacing="0" cellpadding="0">
-                                          <tr>
-                                            <td align="left" style="border-radius: 3px;" bgcolor="#17bef7">
-                                              <a class="button raised" href={{link}} target="_blank" style="font-size: 14px; line-height: 14px; font-weight: 500; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 10px 25px; border: 1px solid #25e47a; display: inline-block;">BUTTON</a>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                              <!-- END BUTTON -->
+
                             </table>
                           </td>
                         </tr>

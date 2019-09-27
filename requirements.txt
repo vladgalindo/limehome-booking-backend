@@ -12,8 +12,12 @@ flask_cors
 flask_google_cloud_logger
 argon2-cffi
 Flask-PyMongo
+flask_mongoengine
+mongoengine
 Jinja2
 gunicorn
 mockupdb
-flaskr=1.0.0
 pytest
+flask_testing
+flask_mongoengine
+mongomock

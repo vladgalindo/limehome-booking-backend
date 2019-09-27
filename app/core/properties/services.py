@@ -1,5 +1,5 @@
 import requests
-from app import app
+from app.core import app
 
 
 class PropertiesService(object):

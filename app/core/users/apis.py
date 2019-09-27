@@ -1,28 +1,29 @@
-from flask_restplus import Namespace, Resource
-from app import api
-from .models import user_request
+from flask_restplus import Resource
 from .services import UserService
+from .user_dto import UserDTO
 
-users_api = Namespace('users', description='Users APIs')
-userService = UserService()
+api = UserDTO.api
+user_request = UserDTO.generic_users
+user_service = UserService()
 
-
-@users_api.route('/')
+@api.route('/')
 class Users(Resource):
     '''
     Add Users
     '''
-
-    @users_api.expect(user_request)
+    @api.doc('list_of_registered_users')
+    @api.expect(user_request)
     def post(self):
-        """
+        '''
+        Register a user
         :return:
-        """
-        userService.register_user(api.payload)
+        '''
+        print(api.payload)
+        user_service.register_user(body=api.payload)
         return {'ui': True, 'status': 'success',  "sms": 'Way to go, you have sing up'}, 200
 
 
-@users_api.route('/activate/<string:id>')
+@api.route('/activate/<string:id>')
 class UserActivate(Resource):
     """
     Activate User
@@ -33,5 +34,6 @@ class UserActivate(Resource):
         :param id:
         :return:
         """
-        userService.activate_user(id)
+
+        user_service.activate_user(id)
         return {'ui': True, 'status': 'success',  "sms": "You're ready to go!, activation Successfully"}, 200

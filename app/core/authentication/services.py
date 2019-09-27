@@ -1,13 +1,11 @@
-from flask_restplus import abort
 from passlib.hash import argon2
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti
-from app.common.error_handler import error_handler
+from mongoengine import DoesNotExist
 
-from app.common.mongo_base import MongoBase
-from app.common.constants import COLLECTIONS
-from app import redis_db, app
-
-mongobase_obj = MongoBase()
+from app.core.common.error_handler import error_handler
+from app.core.common.redis_db import redis_db
+from app.core import app
+from app.core.users.user_model import Users
 
 
 class AuthorizationService(object):
@@ -22,11 +20,11 @@ class AuthorizationService(object):
         :return:
         '''
         email, password = body['email'], body['password']
-        count, registries = mongobase_obj.get(COLLECTIONS['USERS'], {"email": email, "meta.is_deleted": False})
-        if count > 0:
-            if argon2.verify(password, registries[0]['password']):
-                if registries[0]['is_active'] is True:
-                    user_id = str(registries[0]['_id'])
+        try:
+            user = Users.objects.get(email=email)  # "meta.is_deleted"
+            if argon2.verify(password, user['password']):
+                if user['is_active'] is True:
+                    user_id = str(user['_id'])
                     access_token = create_access_token(identity=user_id)
                     refresh_token = create_refresh_token(identity=user_id)
                     access_jti = get_jti(encoded_token=access_token)
@@ -41,8 +39,6 @@ class AuthorizationService(object):
             else:
                 message = "Your Credentials don't match with our registries"
                 error_handler(code=401, message=message, ui_status=True)
-
-        else:
+        except DoesNotExist as e:
             message = "Your Credentials don't match with our registries"
             error_handler(code=401, message=message, ui_status=True)
-
