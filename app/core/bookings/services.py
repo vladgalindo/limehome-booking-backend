@@ -27,16 +27,16 @@ class BookingService(object):
         # payload = custom_marshal(payload, booking_save, 'create')
         print("payload: {}".format(payload))
         user = Users.objects.get(_id=ObjectId(payload['user']))
-        booking = Bookings(place_id=payload['place_id'], icon=payload['icon'], latitude=payload['latitude'],
+        booking = Bookings(_id=ObjectId(), place_id=payload['place_id'], icon=payload['icon'], latitude=payload['latitude'],
                            longitude=payload['longitude'], href=payload['href'], vicinity=payload['vicinity'],
                            title=payload['title'], arrival=payload['arrival'], departure=payload['departure'],
                            guests=payload['guests'], room_type=payload['room_type'], user=user,
                            created_on=format_datetime(datetime.now(), "%Y-%m-%dT%H:%M:%S.%f%z"))
-        booking.save()
+        new_booking = booking.save()
 
         send_mail([user['email']], "LimeHome App New Booking", 'New Booking', 'booking_email.html',
                   {'id': str(booking['_id']), 'name': user['first_name'], 'title': payload['title'], 'vicinity': payload[
-                      'vicinity'], 'arrival': datetime.strptime(payload['arrival'], "%Y-%m-%dT%H:%M:%S.%f%Z")})
+                      'vicinity'], 'arrival': payload['arrival'][:10]})
 
 
     def update_booking(self, id, user_id, payload):
@@ -47,14 +47,12 @@ class BookingService(object):
         :return:
         '''
         try:
-            booking = Bookings.objects.get(_id=ObjectId(id))
-            print(payload)
-            payload['place_id'] = booking['place_id']
-            # payload = custom_marshal(payload, booking_save, 'update')
-            user = Users.objects.get(_id=ObjectId(user_id))
-            booking.save(title=payload['title'], arrival=payload['arrival'], departure=payload['departure'],
-                     guests=payload['guests'], room_type=payload['room_type'], place_id=payload['place_id'], user=user)
-            booking.save()
+            booking = Bookings.objects(_id=ObjectId(id)).update_one(set__title=payload['title'],
+                                                                    set__arrival=payload['arrival'],
+                                                                    set__departure=payload['departure'],
+                                                                    set__guests=payload['guests'],
+                                                                    set__room_type=payload['room_type'])
+            # booking.save()
         except DoesNotExist as e:
             message = "The booking you are trying to modify belongs to a different user"
             error_handler(code=400, message=message, ui_status=True)
@@ -103,18 +101,14 @@ class BookingService(object):
             error_handler(code=404, message=message, ui_status=True)
 
 
-    def soft_delete_booking(self, id, payload):
+    def soft_delete_booking(self, id):
         """
         Soft deleting a booking
         :param payload:
         :return:
         """
         try:
-            booking = Bookings.objects.get(_id=ObjectId(id))
-            print(booking.to_json())
-            payload['place_id'] = booking['place_id']
-            booking(place_id=payload['place_id'], is_deleted=True)
-            booking.save()
+            inactive_booking = Bookings.objects(_id=ObjectId(id)).update_one(set__is_deleted=True)
         except DoesNotExist as e:
             message = "The booking you are trying to delete was not found"
             error_handler(code=400, message=message, ui_status=True)

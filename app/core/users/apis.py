@@ -1,8 +1,6 @@
-from flask import request
 from flask_restplus import Resource
 from .services import UserService
 from .user_dto import UserDTO
-from .user_model import Users
 
 api = UserDTO.api
 user_request = UserDTO.generic_users

@@ -77,10 +77,7 @@ class BookingDelete(Resource):
         :param id:
         :return:
         """
-        user_id = get_jwt_identity()
-        req_payload = api.payload
-        req_payload['user'] = user_id
-        booking_service.soft_delete_booking(id, req_payload)
+        booking_service.soft_delete_booking(id)
         return {"ui": True, "status": "success", "sms": "Booking deleted successfully"}, 202
 
 

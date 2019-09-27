@@ -19,5 +19,5 @@ class Bookings(DynamicDocument):
     room_type = StringField(required=True)
     user = ReferenceField(Users)
     is_deleted = BooleanField(default=False)
-    created_on = StringField(required=True)
+    created_on = StringField(required=False)
     meta = {'collection': 'bookings'}
